@@ -27,7 +27,7 @@
 
 	<artifactId>cora-docker-backupclient</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<name>Drift docker external backup</name>
 
 	<properties>
@@ -39,7 +39,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-docker-backupclient.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-docker-backupclient.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-docker-backupclient.git</url>
-		<tag>release/1.2</tag>
+		<tag>cora-docker-backupclient-1.2.0</tag>
 	</scm>
 
 	<dependencies>
