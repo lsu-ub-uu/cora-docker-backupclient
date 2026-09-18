@@ -37,7 +37,7 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-docker-backupclient.git</connection>
-		<developerConnection>scm:https://github.com/lsu-ub-uu/cora-docker-backupclient.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-docker-backupclient.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-docker-backupclient.git</url>
 		<tag>HEAD</tag>
 	</scm>
