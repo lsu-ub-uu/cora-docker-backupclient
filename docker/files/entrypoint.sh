@@ -4,6 +4,7 @@ set -euo pipefail
 start(){
 	download_files "/tmp/clientInstallationFiles"
 	install_client
+	verify_installation
 }
 
 download_files() {
@@ -18,18 +19,45 @@ download_files() {
         "TIVsm-BAhdw.x86_64.rpm"
     )
     
-    for file in "${files[@]}"; do
-        echo "Downloading: $file"
-        curl -f -O --output-dir "$output_dir" "$base_url/$file"
-        if [ $? -eq 0 ]; then
-            echo "✓ Successfully downloaded: $file"
-        else
-            echo "✗ Failed to download: $file"
-            return 1
-        fi
-    done
+	for file in "${files[@]}"; do
+	    echo "Downloading: $file"
+	    if curl -f -O --output-dir "$output_dir" "$base_url/$file"; then
+	        echo "✓ Successfully downloaded: $file"
+	    else
+	        echo "✗ Failed to download: $file"
+	        return 1
+	    fi
+	done
     
     echo "All files downloaded to: $output_dir"
+}
+
+verify_installation(){
+	local packages=(
+		"gskcrypt64"
+		"gskssl64"
+		"TIVsm-API64"
+		"TIVsm-BA"
+		"TIVsm-BAhdw"
+	)
+
+	local missing=()
+
+	for pkg in "${packages[@]}"; do
+		if rpm -q "$pkg" >/dev/null 2>&1; then
+			echo "✓ Verified installed: $pkg ($(rpm -q "$pkg"))"
+		else
+			echo "✗ Package not registered as installed: $pkg"
+			missing+=("$pkg")
+		fi
+	done
+
+	if [ "${#missing[@]}" -ne 0 ]; then
+		echo "Installation verification failed for: ${missing[*]}"
+		return 1
+	fi
+
+	echo "All packages verified as installed."
 }
 
 install_client(){
@@ -50,4 +78,4 @@ install_client(){
 	ln -sf /etc/tivoli/dsm.sys /opt/tivoli/tsm/client/ba/bin/dsm.sys
 }
 
-start();
+start
