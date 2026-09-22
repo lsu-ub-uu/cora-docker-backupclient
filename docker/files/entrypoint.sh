@@ -83,8 +83,8 @@ copy_and_apply_keys_config_files(){
 	# Dynamic linker paths for TSM + GSKit
 	ldconfig || true
 
-#	ln -sf /etc/tivoli/dsm.opt /opt/tivoli/tsm/client/ba/bin/dsm.opt
-#	ln -sf /etc/tivoli/dsm.sys /opt/tivoli/tsm/client/ba/bin/dsm.sys
+	ln -sf /etc/tivoli/dsm.opt /opt/tivoli/tsm/client/ba/bin/dsm.opt
+	ln -sf /etc/tivoli/dsm.sys /opt/tivoli/tsm/client/ba/bin/dsm.sys
 }
 
 run_backup(){

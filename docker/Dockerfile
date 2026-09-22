@@ -17,14 +17,14 @@ RUN microdnf -y update && \
         tar \
         gzip \
         findutils \
+		ps \
         shadow-utils && \
     microdnf clean all && \
     rm -rf /var/cache/{yum,dnf}
 
 # Prepare directories
 RUN mkdir -p /tmp/clientInstallationFiles \
-    /opt/tivoli/tsm/client/ba/bin \
-    /etc/tivoli
+    /opt/tivoli/tsm/client/ba/bin
 
 # Set up entrypoint
 COPY files/entrypoint.sh /usr/local/bin/entrypoint.sh
