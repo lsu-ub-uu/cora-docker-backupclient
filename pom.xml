@@ -27,7 +27,7 @@
 
 	<artifactId>cora-docker-backupclient</artifactId>
 	<packaging>pom</packaging>
-	<version>1.7-SNAPSHOT</version>
+	<version>1.8-SNAPSHOT</version>
 	<name>Drift docker external backup</name>
 
 	<properties>
