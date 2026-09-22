@@ -77,15 +77,14 @@ verify_installation(){
 copy_and_apply_keys_config_files(){
 	echo "⇒ Copying config files and keys"
 	cp -r /tmp/opt/tivoli/tsm/client/ba/bin/. /opt/tivoli/tsm/client/ba/bin/
-	cp -r /tmp/etc/tivoli/. /etc/tivoli/
 	cp -r /tmp/etc/ld.so.conf.d/. /etc/ld.so.conf.d
 	
 	echo "⇒ Apply config files"
 	# Dynamic linker paths for TSM + GSKit
 	ldconfig || true
 
-	ln -sf /etc/tivoli/dsm.opt /opt/tivoli/tsm/client/ba/bin/dsm.opt
-	ln -sf /etc/tivoli/dsm.sys /opt/tivoli/tsm/client/ba/bin/dsm.sys
+#	ln -sf /etc/tivoli/dsm.opt /opt/tivoli/tsm/client/ba/bin/dsm.opt
+#	ln -sf /etc/tivoli/dsm.sys /opt/tivoli/tsm/client/ba/bin/dsm.sys
 }
 
 run_backup(){
