@@ -89,7 +89,8 @@ copy_and_apply_keys_config_files(){
 
 run_backup(){
 	echo "⇒ Start backup"
-	echo "TMP: starting with a nap! zZzzZzzZzzZz "
+	dsmc incremental
+	echo "⇒ After some work we take a nap! zZzzZzzZzzZz"
 	sleep inf
 }
 
