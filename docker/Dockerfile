@@ -17,7 +17,7 @@ RUN microdnf -y update && \
         tar \
         gzip \
         findutils \
-		ps \
+		procps-ng \
         shadow-utils && \
     microdnf clean all && \
     rm -rf /var/cache/{yum,dnf}
