@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
+# Note: no `-e` — we want to control failure handling explicitly
+# so a bad exit code can still be reported to VictoriaMetrics.
+
+VICTORIA_METRICS_URL="http://vmsingle-metrics-victoria-metrics-k8s-stack.metrics.svc.cluster.local:8428"
 
 start(){
 	download_files "/tmp/clientInstallationFiles"
@@ -7,6 +11,7 @@ start(){
 	verify_installation
 	copy_and_apply_keys_config_files
 	run_backup
+	go_to_bed
 }
 
 download_files() {
@@ -90,6 +95,35 @@ copy_and_apply_keys_config_files(){
 run_backup(){
 	echo "⇒ Start backup"
 	dsmc incremental
+    local code=$?      # must be captured immediately, before any other command runs
+
+    report_to_grafana "$code"
+}
+
+report_to_grafana() {
+    local code=$1
+    local now
+    now=$(date +%s%3N)
+
+    local payload
+    payload=$(cat <<-EOF
+backup_daily_code{check="diva_backup"} ${code} ${now}
+backup_daily_timestamp{check="diva_backup"} ${now}
+EOF
+    )
+
+    if ! curl -fsS --retry 3 --max-time 10 \
+        -X POST "${VICTORIA_METRICS_URL}/api/v1/import/prometheus" \
+        -H "Content-Type: text/plain; version=0.0.4" \
+        --data-binary "$payload"; then
+        echo "✗ Failed to report metric to VictoriaMetrics" >&2
+        return 1
+    fi
+
+    echo "✓ Succesfully reported to grafana"
+}
+
+go_to_bed(){
 	echo "⇒ After some work we take a nap! zZzzZzzZzzZz"
 	sleep inf
 }
