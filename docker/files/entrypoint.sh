@@ -99,7 +99,27 @@ run_backup(){
 	dsmc incremental
     local code=$?      # must be captured immediately, before any other command runs
 
+	log_status_code "${code}"
     report_to_grafana "${code}"
+}
+
+log_status_code() {
+	local code=$1
+	local status_message
+
+	if [[ "${code}" == "0" ]]; then
+		status_message="The backup completed successfully."
+	elif [[ "${code}" == "4" ]]; then
+		status_message="The backup completed with exceptions. Some files were not processed. Review the log file for more information."
+	elif [[ "${code}" == "8" ]]; then
+		status_message="The backup completed with warnings. Review the log file for more information."
+	elif [[ "${code}" == "12" ]]; then
+		status_message="The backup failed because of process errors. Review the log file for more information."
+	else
+		status_message="The backup returned an unexpected status code: ${code}. Review the log file for more information."
+	fi
+	
+	echo "${status_message}"
 }
 
 report_to_grafana() {
@@ -113,16 +133,25 @@ backup_daily_code{system="${SYSTEM}"} ${code} ${now}
 backup_daily_timestamp{system="${SYSTEM}"} ${now}
 EOF
     )
-
-    if ! curl -fsS --retry 3 --max-time 10 \
-        -X POST "${VICTORIA_METRICS_URL}/api/v1/import/prometheus" \
-        -H "Content-Type: text/plain; version=0.0.4" \
-        --data-binary "${payload}"; then
-        echo "✗ Failed to report metric to VictoriaMetrics" >&2
-        return 1
-    fi
+    
+    if ! report_metric "${payload}"; then
+		echo "✗ Failed to report metric to VictoriaMetrics" >&2
+		return 1
+	fi
 
     echo "✓ Succesfully reported to grafana"
+}
+
+report_metric() {
+	local payload=$1
+
+	curl --fail --silent --show-error \
+		--retry 3 \
+		--max-time 10 \
+		--request POST \
+		--header "Content-Type: text/plain; version=0.0.4" \
+		--data-binary "${payload}" \
+		"${VICTORIA_METRICS_URL}/api/v1/import/prometheus"
 }
 
 go_to_sleep(){
